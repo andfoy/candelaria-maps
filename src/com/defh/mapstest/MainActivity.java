@@ -1,6 +1,7 @@
 package com.defh.mapstest;
 
 import org.osmdroid.api.IMapController;
+import org.osmdroid.bonuspack.overlays.Marker;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
@@ -19,12 +20,32 @@ public class MainActivity extends Activity {
         map.setTileSource(TileSourceFactory.MAPNIK);
         map.setBuiltInZoomControls(true);
         map.setMultiTouchControls(true);
+        
+        GPSTrack gps = new GPSTrack(MainActivity.this);
+		double latitude = 0, longitude = 0;
+		
+		if(gps.canGetLocation())
+		{
+			latitude = gps.getLatitude();
+			longitude = gps.getLongitude();
+		}
+		else
+		{
+			gps.showSettingsAlert();
+		}
+		
 
-        GeoPoint startPoint = new GeoPoint(48.13, -1.63);
+        GeoPoint startPoint = new GeoPoint(latitude, longitude);
         IMapController mapController = map.getController();
-        mapController.setZoom(9);
+        mapController.setZoom(16);
         mapController.setCenter(startPoint);
+        
+        Marker startMarker = new Marker(map);
+        startMarker.setPosition(startPoint);
+        startMarker.setAnchor(Marker.ANCHOR_CENTER, 1.0f);
+        map.getOverlays().add(startMarker);
 
+        map.invalidate();
 	}
 
 	@Override
