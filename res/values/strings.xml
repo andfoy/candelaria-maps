@@ -4,5 +4,7 @@
     <string name="app_name">Maps Test</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    <string name ="localization">Localización</string>
+    <string name ="about">Acerca de</string>
 
 </resources>
