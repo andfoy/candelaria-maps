@@ -6,5 +6,6 @@
     <string name="hello_world">Hello world!</string>
     <string name ="localization">Localización</string>
     <string name ="about">Acerca de</string>
+    <string name ="display_landmarks">Mostrar Sitios de interés</string>
 
 </resources>
