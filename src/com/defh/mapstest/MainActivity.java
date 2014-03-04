@@ -26,6 +26,8 @@ public class MainActivity extends Activity {
 	
 	private boolean landmarksActive = true;
 	private MapView map;
+	private Landmarks[] landMarks;
+	LocationFileReader reader = new LocationFileReader("https://raw.github.com/andfoy/candelaria-maps/master/test"); 
 	
 
 	@SuppressLint("NewApi")
@@ -38,8 +40,6 @@ public class MainActivity extends Activity {
 		StrictMode.ThreadPolicy.Builder()
 				.permitAll().build();
 				StrictMode.setThreadPolicy(policy);
-		
-		LocationFileReader reader = new LocationFileReader("https://raw.github.com/andfoy/candelaria-maps/master/test"); 
 
 		map = (MapView) findViewById(R.id.map);
 		
@@ -72,25 +72,51 @@ public class MainActivity extends Activity {
         map.getOverlays().add(startMarker);
 
         map.invalidate();
-        try {
-        	int i;
-			List<String[]> landmarks = reader.getFile();
-			for(i = 0; i < landmarks.size(); i++)
-			{
-				String[] currentLandmark = landmarks.get(i);
-				GeoPoint locationPoint = new GeoPoint((Double.parseDouble(currentLandmark[0])), Double.parseDouble(currentLandmark[1]));
-				makeToast("Loading Landmark: "+currentLandmark[3]+"Lat: "+currentLandmark[0]+"Long: "+currentLandmark[1]);
-				Landmarks landmarkPoint = new Landmarks(locationPoint, currentLandmark[3], Integer.parseInt(currentLandmark[2])); 
-				boolean cond = landmarkPoint.drawLandmark(landmarksActive, map);
-				map.invalidate();
-				makeToast("Landmark draw: "+cond);
-			}
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+        drawLandmarks();
         
+        
+        
+	}
+	
+	public void drawLandmarks()
+	{
+        if(landmarksActive)
+        {
+        	int i;
+        	if(landMarks == null)
+        	{
+        		try {
+        			List<String[]> landmarks = reader.getFile();
+        			landMarks = new Landmarks[landmarks.size()];
+        			for(i = 0; i < landmarks.size(); i++)
+        			{
+        				String[] currentLandmark = landmarks.get(i);
+        				GeoPoint locationPoint = new GeoPoint((Double.parseDouble(currentLandmark[0])), Double.parseDouble(currentLandmark[1]));
+        				makeToast("Loading Landmark: "+currentLandmark[3]+" Lat: "+currentLandmark[0]+" Long: "+currentLandmark[1]);
+        				landMarks[i] = new Landmarks(locationPoint, currentLandmark[3], Integer.parseInt(currentLandmark[2])); 
+        				boolean cond = landMarks[i].drawLandmark(landmarksActive, map);
+        				makeToast("Landmark draw: "+cond);
+        			}
+        		} catch (ClientProtocolException e) {
+        		e.printStackTrace();
+        		} catch (IOException e) {
+        		e.printStackTrace();
+        		}
+        	}
+        	else
+        	{
+        		for(i = 0; i < landMarks.length; i++)
+    			{
+    				boolean cond = landMarks[i].drawLandmark(landmarksActive, map);
+    				makeToast("Landmark draw: "+cond);
+    			}
+        	}
+        }
+        else
+        {
+        	map.getTileProvider().clearTileCache();
+        	map.getOverlays().clear();
+        }
 	}
 
 	@Override
@@ -113,7 +139,7 @@ public class MainActivity extends Activity {
 	            return true;
 	        case R.id.display_landmarks:
 	        	landmarksActive = !landmarksActive;
-	        	//landmark.drawLandmark(landmarksActive, map, Landmarks.landmark1);
+	        	drawLandmarks();
                 makeToast("Status is: "+landmarksActive);
 	        	return true;
 	        default:
