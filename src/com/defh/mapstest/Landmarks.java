@@ -8,10 +8,20 @@ import android.graphics.drawable.Drawable;
 
 public class Landmarks {
 	
+	private GeoPoint location;
+	private String name;
+	int id;
 	
-	public static final GeoPoint landmark1 = new GeoPoint(4.5979799, -74.0760842);
+	public Landmarks(GeoPoint coordinates, String locName, int idNumber)
+	{
+		location = coordinates;
+		name = locName;
+		id = idNumber;
+	}
 	
-	public void drawLandmark(boolean state, MapView map, GeoPoint location)
+	//public static final GeoPoint landmark1 = new GeoPoint(4.5979799, -74.0760842);
+	
+	public boolean drawLandmark(boolean state, MapView map)
 	{
 		Drawable nodeIcon = map.getResources().getDrawable(R.drawable.marker_node);	
 		Marker startMarker = new Marker(map);
@@ -21,13 +31,19 @@ public class Landmarks {
 			startMarker.setAnchor(Marker.ANCHOR_CENTER, 1.0f);
 			startMarker.setIcon(nodeIcon);
 			map.getOverlays().add(startMarker);
+			map.invalidate();
+			return true;
+			
 		}
 		else
 		{
 			startMarker.remove(map);
+			map.invalidate();
+			return false;
 		}
-		map.invalidate();
 	}
+	
+	
 	
 
 }
