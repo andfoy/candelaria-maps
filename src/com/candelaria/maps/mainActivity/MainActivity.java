@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.android.navigationdrawerexample;
+package com.candelaria.maps.mainActivity;
 
 import java.io.IOException;
 import java.util.List;
@@ -27,6 +27,8 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.BoundingBoxE6;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+
+import com.example.android.navigationdrawerexample.R;
 
 
 import android.app.Activity;

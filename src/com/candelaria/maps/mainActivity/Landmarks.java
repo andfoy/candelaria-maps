@@ -1,8 +1,10 @@
-package com.example.android.navigationdrawerexample;
+package com.candelaria.maps.mainActivity;
 
 import org.osmdroid.bonuspack.overlays.Marker;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+
+import com.example.android.navigationdrawerexample.R;
 
 import android.graphics.drawable.Drawable;
 

@@ -1,4 +1,4 @@
-package com.example.android.navigationdrawerexample;
+package com.candelaria.maps.mainActivity;
 
 import java.io.BufferedReader;
 import java.io.IOException;

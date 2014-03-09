@@ -1,4 +1,4 @@
-package com.example.android.navigationdrawerexample;
+package com.candelaria.maps.mainActivity;
 
 import android.app.AlertDialog;
 import android.app.Service;
