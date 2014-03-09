@@ -10,7 +10,7 @@ public class Landmarks {
 	
 	private GeoPoint location;
 	private String name;
-	int id;
+ 	private int id;
 	
 	public Landmarks(GeoPoint coordinates, String locName, int idNumber)
 	{
@@ -18,6 +18,23 @@ public class Landmarks {
 		name = locName;
 		id = idNumber;
 	}
+	
+	public GeoPoint getLocation()
+	{
+		return location;
+	}
+	
+	public String getName()
+	{
+		return name;
+	}
+	
+	public int getId()
+	{
+		return id;
+	}
+	
+	
 	
 	//public static final GeoPoint landmark1 = new GeoPoint(4.5979799, -74.0760842);
 	

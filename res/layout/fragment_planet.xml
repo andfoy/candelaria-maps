@@ -14,11 +14,15 @@
   limitations under the License.
   -->
 
-<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/image"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#000000"
-    android:gravity="center"
-    android:padding="32dp" />
+    android:layout_height="match_parent">
+    
+    
+    <org.osmdroid.views.MapView
+        android:id="@+id/map"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"/>
+    
+</RelativeLayout>
 

@@ -23,6 +23,7 @@ import java.util.Locale;
 import org.apache.http.client.ClientProtocolException;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.bonuspack.overlays.Marker;
+import org.osmdroid.bonuspack.overlays.Polyline;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.BoundingBoxE6;
 import org.osmdroid.util.GeoPoint;
@@ -90,10 +91,19 @@ public class MainActivity extends Activity {
     private CharSequence mTitle;
     private String[] mPlanetTitles;
     
-    private boolean landmarksActive = true;
-	private MapView map;
-	private Landmarks[] landMarks;
-	LocationFileReader reader = new LocationFileReader("https://raw.github.com/andfoy/candelaria-maps/master/test");
+    private static boolean landmarksActive = true;
+	private static MapView map;
+	private static Landmarks[] landMarks;
+	static LocationFileReader reader = new LocationFileReader("https://raw.github.com/andfoy/candelaria-maps/master/test");
+	private Polyline routeOverlay;
+	private static Route routeDraw; 
+	
+	private static double north = 4.615205;
+    private static double east  = -74.065685;
+    private static double south = 4.591816;
+    private static double west  =  -74.084587;
+    static double latitude = 0;
+	static double longitude = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,19 +157,16 @@ public class MainActivity extends Activity {
         }
       
         				
-        map = (MapView) findViewById(R.id.map);
+        //map = (MapView) findViewById(R.id.map);
         				
-        map.setTileSource(TileSourceFactory.MAPNIK);
-        map.setBuiltInZoomControls(true);
-        map.setMultiTouchControls(true);
+        //map.setTileSource(TileSourceFactory.MAPNIK);
+        //map.setBuiltInZoomControls(true);
+        //map.setMultiTouchControls(true);
         		      
-        double north = 4.615205;
-        double east  = -74.065685;
-        double south = 4.591816;
-        double west  =  -74.084587;
+        
         		      
         GPSTrack gps = new GPSTrack(MainActivity.this);
-        double latitude = 0, longitude = 0;
+        //double latitude = 0, longitude = 0;
         				
         if(gps.canGetLocation())
         {
@@ -171,24 +178,25 @@ public class MainActivity extends Activity {
         	gps.showSettingsAlert();
         }
         				
-     	BoundingBoxE6 bBox = new BoundingBoxE6(north, east, south, west);
-        map.setScrollableAreaLimit(bBox);
+     	//BoundingBoxE6 bBox = new BoundingBoxE6(north, east, south, west);
+        //map.setScrollableAreaLimit(bBox);
 
-        GeoPoint startPoint = new GeoPoint(latitude, longitude);
-        IMapController mapController = map.getController();
-        mapController.setZoom(16);
-        mapController.setCenter(startPoint);
+        //GeoPoint startPoint = new GeoPoint(latitude, longitude);
+        //IMapController mapController = map.getController();
+        //mapController.setZoom(16);
+        //mapController.setCenter(startPoint);
         		        
-        Marker startMarker = new Marker(map);
-        startMarker.setPosition(startPoint);
-        startMarker.setAnchor(Marker.ANCHOR_CENTER, 1.0f);
-        map.getOverlays().add(startMarker);
+        //Marker startMarker = new Marker(map);
+        //startMarker.setPosition(startPoint);
+        //startMarker.setAnchor(Marker.ANCHOR_CENTER, 1.0f);
+        //map.getOverlays().add(startMarker);
 
-        map.invalidate();
-        drawLandmarks();
+        //map.invalidate();
+        //drawLandmarks();
+        
     }
     
-    public void drawLandmarks()
+    public static void drawLandmarks()
 	{
         if(landmarksActive)
         {
@@ -218,7 +226,7 @@ public class MainActivity extends Activity {
         		for(i = 0; i < landMarks.length; i++)
     			{
     				boolean cond = landMarks[i].drawLandmark(landmarksActive, map);
-    				makeToast("Landmark draw: "+cond);
+    				//makeToast("Landmark draw: "+cond);
     			}
         	}
         }
@@ -278,12 +286,15 @@ public class MainActivity extends Activity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             selectItem(position);
+            
+            makeToast(""+position);
         }
     }
 
     private void selectItem(int position) {
         // update the main content by replacing fragments
         Fragment fragment = new PlanetFragment();
+        makeToast(""+position);
         Bundle args = new Bundle();
         args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
         fragment.setArguments(args);
@@ -341,7 +352,34 @@ public class MainActivity extends Activity {
 
             int imageId = getResources().getIdentifier(planet.toLowerCase(Locale.getDefault()),
                             "drawable", getActivity().getPackageName());
-            ((ImageView) rootView.findViewById(R.id.image)).setImageResource(imageId);
+            //((ImageView) rootView.findViewById(R.id.image)).setImageResource(imageId);
+            map = (MapView) rootView.findViewById(R.id.map);
+			
+            map.setTileSource(TileSourceFactory.MAPNIK);
+            map.setBuiltInZoomControls(true);
+            map.setMultiTouchControls(true);
+            
+            double north = 4.615205;
+            double east  = -74.065689;
+            double south = 4.591816;
+            double west  =  -74.084587;
+            		    
+            				
+         	BoundingBoxE6 bBox = new BoundingBoxE6(north, east, south, west);
+            map.setScrollableAreaLimit(bBox);
+
+            GeoPoint startPoint = new GeoPoint(latitude, longitude);
+            IMapController mapController = map.getController();
+            mapController.setZoom(16);
+            mapController.setCenter(startPoint);
+            		        
+            Marker startMarker = new Marker(map);
+            startMarker.setPosition(startPoint);
+            startMarker.setAnchor(Marker.ANCHOR_CENTER, 1.0f);
+            map.getOverlays().add(startMarker);
+
+            map.invalidate();
+            drawLandmarks();
             getActivity().setTitle(planet);
             return rootView;
         }

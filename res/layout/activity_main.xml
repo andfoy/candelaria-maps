@@ -45,8 +45,8 @@
         android:dividerHeight="0dp"
         android:background="#111"/>
     
-    <org.osmdroid.views.MapView
+    <!-- <org.osmdroid.views.MapView
         android:id="@+id/map"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"/>
+        android:layout_height="fill_parent"/> -->
 </android.support.v4.widget.DrawerLayout>
