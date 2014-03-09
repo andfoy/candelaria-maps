@@ -7,6 +7,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.bonuspack.overlays.Marker;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.BoundingBoxE6;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
@@ -47,6 +48,11 @@ public class MainActivity extends Activity {
         map.setBuiltInZoomControls(true);
         map.setMultiTouchControls(true);
       
+        double north = 4.615205;
+        double east  = -74.065685;
+        double south = 4.591816;
+        double west  =  -74.084587;
+      
         GPSTrack gps = new GPSTrack(MainActivity.this);
 		double latitude = 0, longitude = 0;
 		
@@ -60,6 +66,9 @@ public class MainActivity extends Activity {
 			gps.showSettingsAlert();
 		}
 		
+		BoundingBoxE6 bBox = new BoundingBoxE6(north, east, south, west);
+		
+		map.setScrollableAreaLimit(bBox);
 
         GeoPoint startPoint = new GeoPoint(latitude, longitude);
         IMapController mapController = map.getController();
@@ -92,10 +101,10 @@ public class MainActivity extends Activity {
         			{
         				String[] currentLandmark = landmarks.get(i);
         				GeoPoint locationPoint = new GeoPoint((Double.parseDouble(currentLandmark[0])), Double.parseDouble(currentLandmark[1]));
-        				makeToast("Loading Landmark: "+currentLandmark[3]+" Lat: "+currentLandmark[0]+" Long: "+currentLandmark[1]);
+        				//makeToast("Loading Landmark: "+currentLandmark[3]+" Lat: "+currentLandmark[0]+" Long: "+currentLandmark[1]);
         				landMarks[i] = new Landmarks(locationPoint, currentLandmark[3], Integer.parseInt(currentLandmark[2])); 
         				boolean cond = landMarks[i].drawLandmark(landmarksActive, map);
-        				makeToast("Landmark draw: "+cond);
+        				//makeToast("Landmark draw: "+cond);
         			}
         		} catch (ClientProtocolException e) {
         		e.printStackTrace();
@@ -108,7 +117,7 @@ public class MainActivity extends Activity {
         		for(i = 0; i < landMarks.length; i++)
     			{
     				boolean cond = landMarks[i].drawLandmark(landmarksActive, map);
-    				makeToast("Landmark draw: "+cond);
+    				//makeToast("Landmark draw: "+cond);
     			}
         	}
         }
