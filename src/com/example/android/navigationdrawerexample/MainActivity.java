@@ -17,6 +17,7 @@
 package com.example.android.navigationdrawerexample;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -24,6 +25,8 @@ import org.apache.http.client.ClientProtocolException;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.bonuspack.overlays.Marker;
 import org.osmdroid.bonuspack.overlays.Polyline;
+import org.osmdroid.bonuspack.routing.Road;
+import org.osmdroid.bonuspack.routing.RoadManager;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.BoundingBoxE6;
 import org.osmdroid.util.GeoPoint;
@@ -94,7 +97,10 @@ public class MainActivity extends Activity {
     private static boolean landmarksActive = true;
 	private static MapView map;
 	private static Landmarks[] landMarks;
+	private static ArrayList<ArrayList<Integer>> ids = new ArrayList<ArrayList<Integer>>();
+	private static ArrayList<Integer> currentTour;
 	static LocationFileReader reader = new LocationFileReader("https://raw.github.com/andfoy/candelaria-maps/master/test");
+	static LocationFileReader tours = new LocationFileReader("https://raw.github.com/andfoy/candelaria-maps/master/tour");
 	private Polyline routeOverlay;
 	private static Route routeDraw; 
 	
@@ -177,6 +183,8 @@ public class MainActivity extends Activity {
         {
         	gps.showSettingsAlert();
         }
+        
+        ids = readRoute();
         				
      	//BoundingBoxE6 bBox = new BoundingBoxE6(north, east, south, west);
         //map.setScrollableAreaLimit(bBox);
@@ -237,6 +245,36 @@ public class MainActivity extends Activity {
         }
 	}
     
+    public static ArrayList<ArrayList<Integer>> readRoute()
+    {
+    	ArrayList<ArrayList<Integer>> ids = new ArrayList<ArrayList<Integer>>();
+        List<String[]> routes;
+			try {
+				routes = tours.getFile();
+				for(int i = 0; i < routes.size(); i++)
+	    		{
+	    			String[] currentTour = routes.get(i);
+	    			ArrayList<Integer> landmarksTour = new ArrayList<Integer>();
+	    			for(int j = 0; j < currentTour.length; j++)
+	    			{
+	    				if(currentTour[j].matches("-?\\d+"))
+	    				{
+	    					landmarksTour.add(Integer.parseInt(currentTour[j]));
+	    				}
+	    			}
+	    			ids.add(landmarksTour);
+	    		}
+			} catch (ClientProtocolException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	return ids;
+    		
+    }
+    
     public void makeToast(String message)
 	{
 		Context context = getApplicationContext();
@@ -293,14 +331,34 @@ public class MainActivity extends Activity {
 
     private void selectItem(int position) {
         // update the main content by replacing fragments
-        Fragment fragment = new PlanetFragment();
-        makeToast(""+position);
-        Bundle args = new Bundle();
-        args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
-        fragment.setArguments(args);
+    	if(position == 0)
+    	{
+    		Fragment fragment = new PlanetFragment();
+    		makeToast(""+position);
+    		Bundle args = new Bundle();
+    		args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
+    		fragment.setArguments(args);
 
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+    		FragmentManager fragmentManager = getFragmentManager();
+    		fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+    	}
+    	else
+    	{
+    		GeoPoint startPoint = new GeoPoint(latitude, longitude);
+    		
+    		Marker startMarker = new Marker(map);
+            startMarker.setPosition(startPoint);
+            startMarker.setAnchor(Marker.ANCHOR_CENTER, 1.0f);
+            map.getOverlays().add(startMarker);
+            
+            drawLandmarks();
+    		
+    		routeDraw = new Route(landMarks, ids.get(position-1));
+    		Road routePoints = routeDraw.buildRoute();
+    		routeOverlay = RoadManager.buildRoadOverlay(routePoints, this);
+    		map.getOverlays().add(routeOverlay);
+    		map.invalidate();
+    	}
 
         // update selected item and title, then close the drawer
         mDrawerList.setItemChecked(position, true);
