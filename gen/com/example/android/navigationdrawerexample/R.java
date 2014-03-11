@@ -69,5 +69,7 @@ public final class R {
         public static final int drawer_open=0x7f040001;
         public static final int hello_world=0x7f040006;
         public static final int localization=0x7f040007;
+        public static final int showcase_details=0x7f04000b;
+        public static final int showcase_title=0x7f04000a;
     }
 }

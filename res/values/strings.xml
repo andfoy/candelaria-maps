@@ -36,4 +36,7 @@
     <string name ="localization">Localización</string>
     <string name ="about">Acerca de</string>
     <string name ="display_landmarks">Mostrar Sitios de interés</string>
+    
+    <string name = "showcase_title">Barra lateral</string>
+    <string name = "showcase_details">Cuando la barra lateral esta activa, podrá seleccionar el tour de su interés, automáticamente la ruta será mostrada en pantalla</string>
 </resources>

@@ -32,20 +32,28 @@ import org.osmdroid.util.BoundingBoxE6;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
+//import com.espian.showcaseview.ShowcaseView;
+//import com.espian.showcaseview.targets.ViewTarget;
+
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -54,6 +62,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -110,6 +119,9 @@ public class MainActivity extends Activity {
     private static double west  =  -74.084587;
     static double latitude = 0;
 	static double longitude = 0;
+	static double initLat = 4.5979799;
+	static double initLong = -74.0760842;
+	static Activity act;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,6 +137,7 @@ public class MainActivity extends Activity {
         mPlanetTitles = getResources().getStringArray(R.array.planets_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        Button btn = (Button)(findViewById(R.id.bubble_moreinfo));
 
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
@@ -161,6 +174,21 @@ public class MainActivity extends Activity {
         if (savedInstanceState == null) {
             selectItem(0);
         }
+        
+        SharedPreferences wmbPreference = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean isFirstRun = wmbPreference.getBoolean("FIRSTRUN", true);
+        if (isFirstRun)
+        {
+            // Code to run once
+            SharedPreferences.Editor editor = wmbPreference.edit();
+            editor.putBoolean("FIRSTRUN", false);
+            editor.commit();
+            mDrawerLayout.openDrawer(Gravity.LEFT);
+            //View showcasedView = findViewById(R.id.drawer_layout);
+            //ViewTarget target = new ViewTarget(showcasedView);
+            //ShowcaseView.insertShowcaseView(target, this, R.string.showcase_title, R.string.showcase_details);
+            
+        }
       
         				
         //map = (MapView) findViewById(R.id.map);
@@ -185,6 +213,7 @@ public class MainActivity extends Activity {
         }
         
         ids = readRoute();
+        act = this;
         				
      	//BoundingBoxE6 bBox = new BoundingBoxE6(north, east, south, west);
         //map.setScrollableAreaLimit(bBox);
@@ -219,7 +248,7 @@ public class MainActivity extends Activity {
         				String[] currentLandmark = landmarks.get(i);
         				GeoPoint locationPoint = new GeoPoint((Double.parseDouble(currentLandmark[0])), Double.parseDouble(currentLandmark[1]));
         				//makeToast("Loading Landmark: "+currentLandmark[3]+" Lat: "+currentLandmark[0]+" Long: "+currentLandmark[1]);
-        				landMarks[i] = new Landmarks(locationPoint, currentLandmark[3], Integer.parseInt(currentLandmark[2])); 
+        				landMarks[i] = new Landmarks(act, locationPoint, currentLandmark[3], Integer.parseInt(currentLandmark[2]), currentLandmark[4]); 
         				boolean cond = landMarks[i].drawLandmark(landmarksActive, map);
         				//makeToast("Landmark draw: "+cond);
         			}
@@ -314,6 +343,17 @@ public class MainActivity extends Activity {
 	        	drawLandmarks();
                 makeToast("Status is: "+landmarksActive);
 	        	return true;
+	        case R.id.about:
+	        	AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+	        	alertDialog.setTitle("Acerca de");
+	        	alertDialog.setMessage("Candelaria Maps: Localizador de puntos de Interés en la ciudad de Bogotá \n Ver: 1.0.0");
+	        	alertDialog.setButton("Volver", new DialogInterface.OnClickListener() {
+	        	public void onClick(DialogInterface dialog, int which) {
+	        	// here you can add functions
+	        	}
+	        	});
+	        	alertDialog.setIcon(R.drawable.ic_drawer);
+	        	alertDialog.show();
 	        default:
 	            return super.onOptionsItemSelected(item);    
 	    }
@@ -325,7 +365,7 @@ public class MainActivity extends Activity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             selectItem(position);
             
-            makeToast(""+position);
+            //makeToast(""+position);
         }
     }
 
@@ -344,6 +384,8 @@ public class MainActivity extends Activity {
     	}
     	else
     	{
+    		map.getOverlays().clear();
+    		
     		GeoPoint startPoint = new GeoPoint(latitude, longitude);
     		
     		Marker startMarker = new Marker(map);
@@ -427,9 +469,10 @@ public class MainActivity extends Activity {
             map.setScrollableAreaLimit(bBox);
 
             GeoPoint startPoint = new GeoPoint(latitude, longitude);
+            GeoPoint initPoint = new GeoPoint(initLat, initLong);
             IMapController mapController = map.getController();
             mapController.setZoom(16);
-            mapController.setCenter(startPoint);
+            mapController.setCenter(initPoint);
             		        
             Marker startMarker = new Marker(map);
             startMarker.setPosition(startPoint);
